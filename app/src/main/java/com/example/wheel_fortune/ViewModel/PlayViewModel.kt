@@ -1,6 +1,5 @@
 package com.example.wheel_fortune.ViewModel
 
-import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import com.example.wheel_fortune.Model.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,18 +12,18 @@ class PlayViewModel : ViewModel() {
     val uiState: StateFlow<PlayUIState> = _uiState.asStateFlow()
 
     fun startGame() {
-        _uiState.update {it.copy(word = Data.listOfWords.random())}
+        _uiState.update {it.copy(word = Data.getWord(), letters = uiState.value.letters)}
     }
 
     fun endGame() {
-        _uiState.update {it.copy(won = false, lost = false)}
+        _uiState.update {it.copy(won = false, lost = false, letters = uiState.value.letters)}
     }
 
     fun onGuess(letter: Char) {
-        if(uiState.value.word.item.contains(letter)) {
+        if(uiState.value.word.item.lowercase().contains(letter.lowercase())) {
             var counter = 0
             for (char in uiState.value.word.item) {
-                if(char == letter) {
+                if(char.lowercase() == letter.lowercase()) {
                     counter++
                 }
             }
@@ -33,12 +32,16 @@ class PlayViewModel : ViewModel() {
         } else {
             _uiState.update {it.copy(health = uiState.value.health - 1)}
         }
-
-        _uiState.update {it.copy(hasSpun = false)}
+        _uiState.value.letters.forEach {
+            if(it.letter == letter) {
+                it.isGuessed = true
+            }
+        }
+        _uiState.update {it.copy(hasSpun = false, letters = uiState.value.letters)}
     }
 
     fun onSpin() {
-        var point = points().getPointsList().shuffled().random()
+        val point = points().getPointsList().shuffled().random()
 
         if(point == 0) {
             _uiState.update {it.copy(score = 0)}

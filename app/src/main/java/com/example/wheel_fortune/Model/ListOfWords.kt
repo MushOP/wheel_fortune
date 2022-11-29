@@ -1,11 +1,14 @@
 package com.example.wheel_fortune.Model
 
-import androidx.annotation.DrawableRes
-
-data class Item(
+class Item(
     var category: String = "",
-    var item: String = ""
+    var item: String = "",
 )
+
+class KeyboardGuessLetters(char: Char) {
+    var letter: Char = char
+    var isGuessed: Boolean = false
+}
 
 object Data {
     val listOfWords = listOf(
@@ -95,4 +98,8 @@ object Data {
         Item("Countries", "iraq"),
         Item("Countries", "ireland"),
     )
+
+    fun getWord(): Item {
+        return listOfWords.random()
+    }
 }

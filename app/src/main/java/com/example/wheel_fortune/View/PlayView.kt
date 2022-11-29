@@ -11,11 +11,8 @@ import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.Text
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,19 +21,23 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.wheel_fortune.Model.PlayUIState
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.example.wheel_fortune.Model.Item
 import com.example.wheel_fortune.ViewModel.PlayViewModel
+import com.example.wheel_fortune.ui.theme.bgColor
 
 @Composable
-fun PlayView(viewModel: PlayViewModel){
+fun PlayView(viewModel: PlayViewModel = viewModel(), navController: NavController){
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF232F34))
+            .background(bgColor)
     )
 
     val uiState by viewModel.uiState.collectAsState()
-
+    val showKeyboard = rememberSaveable { mutableStateOf(false) }
     Column(
         modifier = Modifier
             .fillMaxSize(),
@@ -44,12 +45,30 @@ fun PlayView(viewModel: PlayViewModel){
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         BuildHealthAndStats(hp = uiState.health, score = uiState.score)
-        Spacer(modifier = Modifier.size(75.dp))
-        BuildLetterBox()
-        Spacer(modifier = Modifier.size(75.dp))
-        StartSpinButton(hasSpun = uiState.hasSpun, guess = { viewModel.onSpin() })
+        Spacer(modifier = Modifier.size(20.dp))
+        BuildCategory(category = uiState.word.category)
+        Spacer(modifier = Modifier.size(10.dp))
+        BuildLetterBox(word = uiState.word)
+        Spacer(modifier = Modifier.size(30.dp))
+        StartSpinButton(hasSpun = uiState.hasSpun, onSpin = {viewModel.onSpin()}, showKeyboard)
+        Spacer(modifier = Modifier.size(80.dp))
+        BuildKeyboard(viewModel = viewModel, showKeyboard)
     }
 
+}
+
+@Composable
+fun BuildCategory(category: String){
+    Text(
+        text = "Category: " + category.uppercase(),
+        color = Color.White,
+        fontSize = 30.sp,
+        fontWeight = FontWeight.Bold,
+        textAlign = TextAlign.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(10.dp)
+    )
 }
 
 @Composable
@@ -89,7 +108,7 @@ fun BuildHealthAndStats(hp : Int, score : Int) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Points",
+                text = "Score",
                 color = Color.Yellow,
                 fontSize = 25.sp,
                 fontWeight = FontWeight.Bold
@@ -105,7 +124,7 @@ fun BuildHealthAndStats(hp : Int, score : Int) {
 }
 
 @Composable
-fun BuildLetterBox() {
+fun BuildLetterBox(word: Item) {
     Box(
         modifier = Modifier
             .fillMaxWidth(0.95f)
@@ -121,14 +140,14 @@ fun BuildLetterBox() {
             backgroundColor = Color(0xFF2d3d43),
             elevation = 20.dp
         ) {
-            BuildLetters()
+            BuildLetters(word)
         }
     }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun BuildLetters() {
+fun BuildLetters(word: Item) {
     LazyVerticalGrid(
         cells = GridCells.Adaptive(45.dp),
         contentPadding = PaddingValues(horizontal = 5.dp, vertical = 2.dp),
@@ -137,7 +156,7 @@ fun BuildLetters() {
             .fillMaxHeight(0.2f),
 
     ) {
-        items(26) {
+        items(word.item.length) { index ->
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -146,7 +165,7 @@ fun BuildLetters() {
                 elevation = 20.dp
             ) {
                 Text(
-                    text = "L",
+                    text = word.item[index].toString().uppercase(),
                     color = Color.White,
                     fontSize = 25.sp,
                     fontWeight = FontWeight.Bold,
@@ -158,7 +177,7 @@ fun BuildLetters() {
 }
 
 @Composable
-fun StartSpinButton(hasSpun: Boolean, guess: () -> Unit = {}) {
+fun StartSpinButton(hasSpun: Boolean, onSpin: () -> Unit = {}, showKeyboard: MutableState<Boolean>) {
     Box(
         modifier = Modifier
             .fillMaxWidth(0.5f)
@@ -167,7 +186,7 @@ fun StartSpinButton(hasSpun: Boolean, guess: () -> Unit = {}) {
     ) {
         Button(
             enabled = !hasSpun,
-            onClick = {guess()},
+            onClick = {onSpin(); showKeyboard.value = true},
             colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF008000)),
             modifier = Modifier.size(250.dp, 50.dp),
         )
@@ -183,8 +202,53 @@ fun StartSpinButton(hasSpun: Boolean, guess: () -> Unit = {}) {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun BuildKeyboard(viewModel: PlayViewModel, showKeyboard: MutableState<Boolean>) {
+    if(showKeyboard.value){
+        val uiState by viewModel.uiState.collectAsState()
+        val guess = uiState.letters
+
+        LazyVerticalGrid(
+            cells = GridCells.Adaptive(40.dp),
+            contentPadding = PaddingValues(horizontal = 4.dp, vertical = 2.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+
+        ) {
+            items(guess.size) { index ->
+                val btncolor = if(!guess[index].isGuessed) Color.White else bgColor
+                val txtcolor = if(!guess[index].isGuessed) Color.Black else bgColor
+
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(5.dp),
+                    backgroundColor = btncolor,
+                    elevation = 20.dp
+                ) {
+                    Button(
+                        onClick = {viewModel.onGuess(guess[index].letter)},
+                        enabled = !guess[index].isGuessed,
+                        colors = ButtonDefaults.buttonColors(backgroundColor = btncolor, disabledBackgroundColor = btncolor),
+                        modifier = Modifier.size(250.dp, 50.dp),
+                    ) {
+                        Text(
+                            text = guess[index].letter.toString(),
+                            color = txtcolor,
+                            fontSize = 25.sp,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center,
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun PlayPreview() {
-    PlayView(PlayViewModel())
+    PlayView(navController = rememberNavController())
 }
