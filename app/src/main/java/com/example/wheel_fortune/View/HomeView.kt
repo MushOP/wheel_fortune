@@ -14,14 +14,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.example.wheel_fortune.ui.theme.bgColor
 
 @Composable
-fun HomeView(){
+fun HomeView(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
             .size(size = 300.dp)
-            .background(Color(0xFF232F34))
+            .background(bgColor)
     )
     // Add the text in the corner, made this before column so it doesn't allign wrong
     Text(text = "Made by - s205430",
@@ -50,7 +53,7 @@ fun HomeView(){
         Spacer(modifier = Modifier.size(50.dp))
 
         Button(
-            onClick = {  },
+            onClick = { navController.navigate("play") },
             colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF008000)),
             modifier = Modifier.size(250.dp, 50.dp),
         )
@@ -70,5 +73,5 @@ fun HomeView(){
 @Preview(showBackground = true)
 @Composable
 fun HomePreview() {
-    HomeView()
+    HomeView(rememberNavController())
 }
