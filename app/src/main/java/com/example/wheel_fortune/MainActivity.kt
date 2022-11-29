@@ -1,5 +1,6 @@
 package com.example.wheel_fortune
 
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -10,6 +11,8 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
+import com.example.wheel_fortune.Nav.Nav
 import com.example.wheel_fortune.ui.theme.Wheel_fortuneTheme
 
 class MainActivity : ComponentActivity() {
@@ -17,12 +20,15 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             Wheel_fortuneTheme {
-                // A surface container using the 'background' color from the theme
+
+                // Lock rotation to portrait only
+                requestedOrientation = (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    Greeting("Android")
+                    Nav(controller = rememberNavController())
                 }
             }
         }
