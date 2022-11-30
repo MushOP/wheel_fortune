@@ -12,7 +12,6 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,7 +23,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.wheel_fortune.Model.Item
 import com.example.wheel_fortune.ViewModel.PlayViewModel
 import com.example.wheel_fortune.ui.theme.bgColor
 
@@ -37,7 +35,6 @@ fun PlayView(viewModel: PlayViewModel = viewModel(), navController: NavControlle
     )
 
     val uiState by viewModel.uiState.collectAsState()
-    val showKeyboard = rememberSaveable { mutableStateOf(false) }
     Column(
         modifier = Modifier
             .fillMaxSize(),
@@ -48,13 +45,13 @@ fun PlayView(viewModel: PlayViewModel = viewModel(), navController: NavControlle
         Spacer(modifier = Modifier.size(20.dp))
         BuildCategory(category = uiState.word.category)
         Spacer(modifier = Modifier.size(10.dp))
-        BuildLetterBox(word = uiState.word)
+        BuildLetterBox(viewModel = viewModel)
         Spacer(modifier = Modifier.size(30.dp))
-        StartSpinButton(hasSpun = uiState.hasSpun, onSpin = {viewModel.onSpin()}, showKeyboard)
-        Spacer(modifier = Modifier.size(80.dp))
-        BuildKeyboard(viewModel = viewModel, showKeyboard)
+        StartSpinButton(hasSpun = uiState.hasSpun, onSpin = {viewModel.onSpin()})
+        ShowSpinPoints(points = uiState.spinPoints)
+        Spacer(modifier = Modifier.size(70.dp))
+        BuildKeyboard(viewModel = viewModel)
     }
-
 }
 
 @Composable
@@ -124,7 +121,7 @@ fun BuildHealthAndStats(hp : Int, score : Int) {
 }
 
 @Composable
-fun BuildLetterBox(word: Item) {
+fun BuildLetterBox(viewModel: PlayViewModel) {
     Box(
         modifier = Modifier
             .fillMaxWidth(0.95f)
@@ -140,14 +137,17 @@ fun BuildLetterBox(word: Item) {
             backgroundColor = Color(0xFF2d3d43),
             elevation = 20.dp
         ) {
-            BuildLetters(word)
+            BuildLetters(viewModel = viewModel)
         }
     }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun BuildLetters(word: Item) {
+fun BuildLetters(viewModel: PlayViewModel) {
+    val uiState by viewModel.uiState.collectAsState()
+    val word = uiState.word
+    val letters = uiState.WordInletters
     LazyVerticalGrid(
         cells = GridCells.Adaptive(45.dp),
         contentPadding = PaddingValues(horizontal = 5.dp, vertical = 2.dp),
@@ -157,6 +157,8 @@ fun BuildLetters(word: Item) {
 
     ) {
         items(word.item.length) { index ->
+            println("isguessed: " + letters[index].isGuessed)
+            val txt = if(letters[index].isGuessed) letters[index].letter.uppercase() else ""
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -165,7 +167,7 @@ fun BuildLetters(word: Item) {
                 elevation = 20.dp
             ) {
                 Text(
-                    text = word.item[index].toString().uppercase(),
+                    text = txt,
                     color = Color.White,
                     fontSize = 25.sp,
                     fontWeight = FontWeight.Bold,
@@ -177,7 +179,7 @@ fun BuildLetters(word: Item) {
 }
 
 @Composable
-fun StartSpinButton(hasSpun: Boolean, onSpin: () -> Unit = {}, showKeyboard: MutableState<Boolean>) {
+fun StartSpinButton(hasSpun: Boolean, onSpin: () -> Unit = {}) {
     Box(
         modifier = Modifier
             .fillMaxWidth(0.5f)
@@ -186,7 +188,7 @@ fun StartSpinButton(hasSpun: Boolean, onSpin: () -> Unit = {}, showKeyboard: Mut
     ) {
         Button(
             enabled = !hasSpun,
-            onClick = {onSpin(); showKeyboard.value = true},
+            onClick = {onSpin()},
             colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF008000)),
             modifier = Modifier.size(250.dp, 50.dp),
         )
@@ -202,11 +204,29 @@ fun StartSpinButton(hasSpun: Boolean, onSpin: () -> Unit = {}, showKeyboard: Mut
     }
 }
 
+@Composable
+fun ShowSpinPoints(points: Int) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth(0.5f)
+            .fillMaxHeight(0.1f),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "Points: $points",
+            color = Color.White,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun BuildKeyboard(viewModel: PlayViewModel, showKeyboard: MutableState<Boolean>) {
-    if(showKeyboard.value){
-        val uiState by viewModel.uiState.collectAsState()
+fun BuildKeyboard(viewModel: PlayViewModel) {
+    val uiState by viewModel.uiState.collectAsState()
+    if(uiState.hasSpun){
         val guess = uiState.letters
 
         LazyVerticalGrid(

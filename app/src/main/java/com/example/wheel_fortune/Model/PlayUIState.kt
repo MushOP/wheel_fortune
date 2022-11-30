@@ -9,6 +9,7 @@ data class PlayUIState(
     var amtOfLetters: Int = 0,
     var hasSpun: Boolean = false,
     var spinPoints: Int = 0,
+    var WordInletters: List<WordInletters> = mutableListOf(),
     var letters: List<KeyboardGuessLetters> = listOf(
         KeyboardGuessLetters('A'),
         KeyboardGuessLetters('B'),

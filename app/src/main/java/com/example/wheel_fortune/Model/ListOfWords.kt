@@ -1,12 +1,16 @@
 package com.example.wheel_fortune.Model
 
-class Item(
+data class Item(
     var category: String = "",
     var item: String = "",
 )
 
 class KeyboardGuessLetters(char: Char) {
     var letter: Char = char
+    var isGuessed: Boolean = false
+}
+
+class WordInletters(var letter: Char) {
     var isGuessed: Boolean = false
 }
 

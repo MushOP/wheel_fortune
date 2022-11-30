@@ -11,8 +11,16 @@ class PlayViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(PlayUIState())
     val uiState: StateFlow<PlayUIState> = _uiState.asStateFlow()
 
+    // Split up letters after we find the word
     fun startGame() {
-        _uiState.update {it.copy(word = Data.getWord(), letters = uiState.value.letters)}
+        val word = Data.getWord()
+        // Use muteablelistof so we use .add
+        val wordInletters = mutableListOf<WordInletters>()
+        for (letter in word.item) {
+            wordInletters.add(WordInletters(letter))
+        }
+
+        _uiState.update {it.copy(word = word, letters = uiState.value.letters, WordInletters = wordInletters)}
     }
 
     fun endGame() {
@@ -34,6 +42,11 @@ class PlayViewModel : ViewModel() {
         }
         _uiState.value.letters.forEach {
             if(it.letter == letter) {
+                it.isGuessed = true
+            }
+        }
+        uiState.value.WordInletters.forEach {
+            if(it.letter.lowercase() == letter.lowercase()) {
                 it.isGuessed = true
             }
         }
