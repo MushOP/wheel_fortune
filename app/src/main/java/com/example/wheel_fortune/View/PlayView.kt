@@ -52,6 +52,14 @@ fun PlayView(viewModel: PlayViewModel = viewModel(), navController: NavControlle
         Spacer(modifier = Modifier.size(70.dp))
         BuildKeyboard(viewModel = viewModel)
     }
+
+    if(uiState.lost){
+        viewModel.endGame()
+        navController.navigate("lost")
+    } else if(uiState.won){
+        viewModel.endGame()
+        navController.navigate("win")
+    }
 }
 
 @Composable
@@ -157,7 +165,6 @@ fun BuildLetters(viewModel: PlayViewModel) {
 
     ) {
         items(word.item.length) { index ->
-            println("isguessed: " + letters[index].isGuessed)
             val txt = if(letters[index].isGuessed) letters[index].letter.uppercase() else ""
             Card(
                 modifier = Modifier

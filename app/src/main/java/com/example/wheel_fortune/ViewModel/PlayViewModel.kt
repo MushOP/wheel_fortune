@@ -24,32 +24,38 @@ class PlayViewModel : ViewModel() {
     }
 
     fun endGame() {
-        _uiState.update {it.copy(won = false, lost = false, letters = uiState.value.letters)}
+        _uiState.update {it.copy(won = false, lost = false)}
     }
 
     fun onGuess(letter: Char) {
         if(uiState.value.word.item.lowercase().contains(letter.lowercase())) {
             var counter = 0
-            for (char in uiState.value.word.item) {
-                if(char.lowercase() == letter.lowercase()) {
+            for (char in uiState.value.WordInletters) {
+                if(char.letter.lowercase() == letter.lowercase()) {
                     counter++
+                    char.isGuessed = true
                 }
             }
 
             _uiState.update {it.copy(amtOfLetters = uiState.value.amtOfLetters + counter, score = uiState.value.score + (counter * uiState.value.spinPoints))}
         } else {
             _uiState.update {it.copy(health = uiState.value.health - 1)}
+
+            if(uiState.value.health == 0) {
+                _uiState.update {it.copy(lost = true)}
+            }
         }
+
         _uiState.value.letters.forEach {
             if(it.letter == letter) {
                 it.isGuessed = true
             }
         }
-        uiState.value.WordInletters.forEach {
-            if(it.letter.lowercase() == letter.lowercase()) {
-                it.isGuessed = true
-            }
+
+        if(uiState.value.amtOfLetters == uiState.value.word.item.length) {
+            _uiState.update {it.copy(won = true)}
         }
+
         _uiState.update {it.copy(hasSpun = false, letters = uiState.value.letters)}
     }
 

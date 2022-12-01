@@ -70,7 +70,6 @@ object Data {
         Item("Countries", "denmark"),
         Item("Countries", "ecuador"),
         Item("Countries", "sweden"),
-        Item("Countries", "theunitedstatesofamerica"),
         Item("Countries", "ecuador"),
         Item("Countries", "algeria"),
         Item("Countries", "argentina"),
@@ -101,6 +100,11 @@ object Data {
         Item("Countries", "iran"),
         Item("Countries", "iraq"),
         Item("Countries", "ireland"),
+        Item("Movies", "theavengers"),
+        Item("Movies", "thegodfather"),
+        Item("Movies", "thelordoftherings"),
+        Item("Movies", "pulpfiction"),
+        Item("Movies", "thegodfatherpartii"),
     )
 
     fun getWord(): Item {
