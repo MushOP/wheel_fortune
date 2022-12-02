@@ -33,8 +33,8 @@ fun PlayView(viewModel: PlayViewModel = viewModel(), navController: NavControlle
             .fillMaxSize()
             .background(bgColor)
     )
-
     val uiState by viewModel.uiState.collectAsState()
+
     Column(
         modifier = Modifier
             .fillMaxSize(),

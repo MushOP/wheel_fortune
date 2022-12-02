@@ -1,10 +1,7 @@
 package com.example.wheel_fortune.View
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -29,13 +26,31 @@ fun LostView(navController: NavController, viewModel: PlayViewModel) {
         modifier = Modifier
             .fillMaxSize()
             .size(size = 300.dp)
-            .background(bgColor)
-    )
+            .background(bgColor),
+    ){
+
+    }
     Column {
         Text(
-            text = "You lost! The word was ${word} and you had ${score} points",
+            text = "You lost!.",
+            color = Color.Red,
+            fontSize = 40.sp,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.size(20.dp))
+        Text(
+            text = "The word was ${word}.",
             color = Color.White,
-            fontSize = 20.sp,
+            fontSize = 35.sp,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.size(20.dp))
+        Text(
+            text = "You had ${score} points.",
+            color = Color.Yellow,
+            fontSize = 25.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
         )

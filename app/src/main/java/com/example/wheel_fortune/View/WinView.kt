@@ -31,9 +31,33 @@ fun WinView(navController: NavController, viewModel: PlayViewModel) {
     )
     Column {
         Text(
-            text = "You won! The word was ${word} and you had ${score} points and ${health} lives left.",
+            text = "You won!.",
+            color = Color.Green,
+            fontSize = 40.sp,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.size(20.dp))
+        Text(
+            text = "The word was ${word}.",
             color = Color.White,
-            fontSize = 20.sp,
+            fontSize = 35.sp,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.size(20.dp))
+        Text(
+            text = "You had ${score} points.",
+            color = Color.Yellow,
+            fontSize = 25.sp,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.size(20.dp))
+        Text(
+            text = "You had ${health} lives left.",
+            color = Color.Red,
+            fontSize = 25.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
         )
