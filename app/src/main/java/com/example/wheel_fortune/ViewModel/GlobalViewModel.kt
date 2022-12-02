@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-class PlayViewModel : ViewModel() {
+class GlobalViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(PlayUIState())
     val uiState: StateFlow<PlayUIState> = _uiState.asStateFlow()
 
@@ -20,14 +20,23 @@ class PlayViewModel : ViewModel() {
             wordInletters.add(WordInletters(letter))
         }
 
-        _uiState.update {it.copy(word = word, letters = uiState.value.letters, WordInletters = wordInletters)}
+        _uiState.update {it.copy(word = word, WordInletters = wordInletters)}
     }
 
+    // Called after the game is finished (before we switch views)
     fun endGame() {
         _uiState.update {it.copy(won = false, lost = false)}
     }
 
+    // Called to restart the game, is used in play and lost view
+    fun resetGame() {
+        val defaultUiState = PlayUIState()
+        _uiState.update {it.copy(score = defaultUiState.score, health = defaultUiState.health, letters = defaultUiState.letters, won = defaultUiState.won, lost = defaultUiState.lost, amtOfLetters = defaultUiState.amtOfLetters, hasSpun = defaultUiState.hasSpun, spinPoints = defaultUiState.spinPoints, firstSpin = defaultUiState.firstSpin)}
+        startGame()
+    }
+
     fun onGuess(letter: Char) {
+        // Check if the letter that is guessed is in the word and if it is, update the wordInLetters + amtofletters
         if(uiState.value.word.item.lowercase().contains(letter.lowercase())) {
             var counter = 0
             for (char in uiState.value.WordInletters) {
@@ -46,17 +55,19 @@ class PlayViewModel : ViewModel() {
             }
         }
 
+        // Loops through the keyboard values and updates them
         _uiState.value.letters.forEach {
             if(it.letter == letter) {
                 it.isGuessed = true
             }
         }
 
+        // Win condition
         if(uiState.value.amtOfLetters == uiState.value.word.item.length) {
             _uiState.update {it.copy(won = true)}
         }
 
-        _uiState.update {it.copy(hasSpun = false, letters = uiState.value.letters)}
+        _uiState.update {it.copy(hasSpun = false)}
     }
 
     fun onSpin() {
@@ -66,7 +77,7 @@ class PlayViewModel : ViewModel() {
             _uiState.update {it.copy(score = 0)}
         }
 
-        _uiState.update {it.copy(spinPoints = point, hasSpun = true)}
+        _uiState.update {it.copy(spinPoints = point, hasSpun = true, firstSpin = false)}
     }
 
     init {

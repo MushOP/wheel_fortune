@@ -4,12 +4,13 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.wheel_fortune.View.*
-import com.example.wheel_fortune.ViewModel.PlayViewModel
+import com.example.wheel_fortune.Views.*
+import com.example.wheel_fortune.ViewModel.GlobalViewModel
 
+// pretty simple navcontroller, self explanatory
 @Composable
 fun Nav(controller: NavHostController) {
-    val viewModel = PlayViewModel()
+    val viewModel = GlobalViewModel()
     NavHost(navController = controller, startDestination = NavViews.Home.navroute){
         composable(NavViews.Home.navroute){
             HomeView(navController = controller)

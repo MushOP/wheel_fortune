@@ -1,4 +1,4 @@
-package com.example.wheel_fortune.View
+package com.example.wheel_fortune.Views
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*

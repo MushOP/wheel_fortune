@@ -5,15 +5,18 @@ data class Item(
     var item: String = "",
 )
 
+// For keyboard buttons (bottom of the play page)
 class KeyboardGuessLetters(char: Char) {
     var letter: Char = char
     var isGuessed: Boolean = false
 }
 
+// To seperate a word into a single char list
 class WordInletters(var letter: Char) {
     var isGuessed: Boolean = false
 }
 
+// Word list, function to get a random word from this list is used in view model
 object Data {
     val listOfWords = listOf(
         Item("Animals", "cat"),
@@ -105,6 +108,28 @@ object Data {
         Item("Movies", "thelordoftherings"),
         Item("Movies", "pulpfiction"),
         Item("Movies", "thegodfatherpartii"),
+        Item("Sport", "football"),
+        Item("Sport", "basketball"),
+        Item("Sport", "tennis"),
+        Item("Sport", "volleyball"),
+        Item("Sport", "baseball"),
+        Item("Sport", "rugby"),
+        Item("Sport", "golf"),
+        Item("Sport", "hockey"),
+        Item("Sport", "cricket"),
+        Item("Sport", "swimming"),
+        Item("Sport", "boxing"),
+        Item("Sport", "wrestling"),
+        Item("Sport", "cycling"),
+        Item("Sport", "skiing"),
+        Item("Sport", "snowboarding"),
+        Item("Sport", "surfing"),
+        Item("Sport", "diving"),
+        Item("Sport", "fencing"),
+        Item("Sport", "archery"),
+        Item("Sport", "badminton"),
+        Item("Sport", "tabletennis"),
+        Item("Sport", "gymnastics"),
     )
 
     fun getWord(): Item {

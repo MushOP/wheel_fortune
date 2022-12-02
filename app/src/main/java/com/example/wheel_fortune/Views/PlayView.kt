@@ -1,4 +1,4 @@
-package com.example.wheel_fortune.View
+package com.example.wheel_fortune.Views
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -23,11 +23,11 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.wheel_fortune.ViewModel.PlayViewModel
+import com.example.wheel_fortune.ViewModel.GlobalViewModel
 import com.example.wheel_fortune.ui.theme.bgColor
 
 @Composable
-fun PlayView(viewModel: PlayViewModel = viewModel(), navController: NavController){
+fun PlayView(viewModel: GlobalViewModel = viewModel(), navController: NavController){
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -48,7 +48,7 @@ fun PlayView(viewModel: PlayViewModel = viewModel(), navController: NavControlle
         BuildLetterBox(viewModel = viewModel)
         Spacer(modifier = Modifier.size(30.dp))
         StartSpinButton(hasSpun = uiState.hasSpun, onSpin = {viewModel.onSpin()})
-        ShowSpinPoints(points = uiState.spinPoints)
+        ShowSpinPoints(points = uiState.spinPoints, firstSpin = uiState.firstSpin)
         Spacer(modifier = Modifier.size(70.dp))
         BuildKeyboard(viewModel = viewModel)
     }
@@ -129,7 +129,7 @@ fun BuildHealthAndStats(hp : Int, score : Int) {
 }
 
 @Composable
-fun BuildLetterBox(viewModel: PlayViewModel) {
+fun BuildLetterBox(viewModel: GlobalViewModel) {
     Box(
         modifier = Modifier
             .fillMaxWidth(0.95f)
@@ -152,7 +152,7 @@ fun BuildLetterBox(viewModel: PlayViewModel) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun BuildLetters(viewModel: PlayViewModel) {
+fun BuildLetters(viewModel: GlobalViewModel) {
     val uiState by viewModel.uiState.collectAsState()
     val word = uiState.word
     val letters = uiState.WordInletters
@@ -212,26 +212,29 @@ fun StartSpinButton(hasSpun: Boolean, onSpin: () -> Unit = {}) {
 }
 
 @Composable
-fun ShowSpinPoints(points: Int) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth(0.5f)
-            .fillMaxHeight(0.1f),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "Points: $points",
-            color = Color.White,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center
-        )
+fun ShowSpinPoints(points: Int, firstSpin: Boolean) {
+    if(!firstSpin){
+        val txt = if(points == 0) "Bankrupt! Points reset" else "Points: $points"
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(0.8f)
+                .fillMaxHeight(0.1f),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = txt,
+                color = Color.White,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun BuildKeyboard(viewModel: PlayViewModel) {
+fun BuildKeyboard(viewModel: GlobalViewModel) {
     val uiState by viewModel.uiState.collectAsState()
     if(uiState.hasSpun){
         val guess = uiState.letters

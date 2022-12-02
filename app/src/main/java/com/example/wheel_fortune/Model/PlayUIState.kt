@@ -37,7 +37,8 @@ data class PlayUIState(
         KeyboardGuessLetters('X'),
         KeyboardGuessLetters('Y'),
         KeyboardGuessLetters('Z'),
-    )
+    ),
+    var firstSpin: Boolean = true,
 )
 
 class points {
